@@ -2,9 +2,23 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
 }
 
+.task-list-item {
+  display: flex;
+  justify-content: space-between;
+}
+.task-name {
+  display: flex;
+  align-items: center;
+}
+.task-actions {
+  display: flex;
+  align-items: center;
+}
+.task-label {
+  margin-left: 4px;
+}
 .task-label.completed {
   text-decoration: line-through;
 }

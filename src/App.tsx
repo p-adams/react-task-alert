@@ -11,38 +11,70 @@ interface Task {
   };
 }
 
+interface UITask extends Task {
+  selected?: boolean;
+}
+
 function App() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<UITask[]>([]);
   const [task, setTask] = useState<string>("");
+  const [showSelectActions, setShowSelectActions] = useState<boolean>(false);
+
   function addTask() {
-    setTasks((v) => [...v, { id: nanoid(), label: task }]);
+    setTasks((v) => [...v, { id: nanoid(), label: task, selected: false }]);
     setTask("");
   }
-  function removeTask(task: Task) {
+  function removeTask(task: UITask) {
     setTasks(($tasks) => $tasks.filter(($task) => $task.id !== task.id));
   }
-  function markAsComplete(task: Task) {
+  function markAsComplete(task: UITask) {
     setTasks(($tasks) =>
       $tasks.map(($task) =>
         $task.id === task.id ? { ...$task, completed: !$task.completed } : $task
       )
     );
   }
+
+  function toggleSelectAll() {
+    setTasks(($tasks) =>
+      $tasks.map(($task) => ({ ...$task, selected: !$task.selected }))
+    );
+    setShowSelectActions(($v) => !$v);
+  }
+
+  function toggleSelectTask(task: UITask) {
+    setTasks(($tasks) =>
+      $tasks.map(($task) =>
+        $task.id === task.id ? { ...$task, selected: !$task.selected } : $task
+      )
+    );
+  }
+
   return (
     <>
       <h1>React Task Alert</h1>
       <div className="card">
-        <div className="task-operations">
-          <button>modify all</button>
-          <button>complete all</button>
-          <button>delete all</button>
-        </div>
+        {showSelectActions && (
+          <div className="task-operations">
+            <button>modify all</button>
+            <button>complete all</button>
+            <button>delete all</button>
+          </div>
+        )}
         <div className="task-display">
           <ul>
+            <label>
+              Select all
+              <input type="checkbox" onChange={() => toggleSelectAll()} />
+            </label>
             {tasks.map((task, i) => (
-              <li key={i}>
-                <div>
-                  <input type="checkbox" />
+              <li key={i} className="task-list-item">
+                <div className="task-name">
+                  <input
+                    type="checkbox"
+                    checked={task.selected}
+                    onChange={() => toggleSelectTask(task)}
+                  />
                   <div
                     className={`task-label ${
                       task.completed ? "completed" : ""
@@ -51,7 +83,7 @@ function App() {
                     {task.label}
                   </div>
                 </div>
-                <div>
+                <div className="task-actions">
                   <button onClick={() => markAsComplete(task)}>complete</button>
                   <button onClick={() => removeTask(task)}>remove</button>
                 </div>
