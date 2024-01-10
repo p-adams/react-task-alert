@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { nanoid } from "nanoid";
 import "./App.css";
 
@@ -17,6 +17,7 @@ interface UITask extends Task {
 
 function App() {
   const [tasks, setTasks] = useState<UITask[]>([]);
+  const [tasksToModify, setTasksToModify] = useState<UITask[]>([]);
   const [task, setTask] = useState<string>("");
   const [showSelectActions, setShowSelectActions] = useState<boolean>(false);
   const [showModifyDialog, setShowModifyDialog] = useState<boolean>(false);
@@ -51,8 +52,24 @@ function App() {
     );
   }
 
-  function modifyTask(task: UITask) {
-    // TODO: implement modify task
+  function enterModifyTaskMode() {
+    setShowModifyDialog(true);
+    setTasksToModify(tasks.filter(($task) => $task.selected));
+  }
+
+  function modifyTaskLabel(e: ChangeEvent<HTMLInputElement>, task: UITask) {
+    // const _key = e.target.name;
+    const $task = { ...tasksToModify.find(($task) => $task.id === task.id) };
+    $task.label = e.target.value;
+    setTasksToModify(($tasks) =>
+      $tasks.map(($t) => {
+        return $t.id === $task.id ? { ...$t, ...$task } : $t;
+      })
+    );
+  }
+
+  function confirmModification() {
+    /* TODO merge tasks with modified tasks */
   }
 
   return (
@@ -62,12 +79,28 @@ function App() {
         {showModifyDialog && (
           <dialog open={showModifyDialog}>
             {/* implement task modify dialog */}
+            <ul>
+              {tasksToModify.map((task) => (
+                <li key={task.id}>
+                  <div>
+                    <input
+                      name="label"
+                      value={task.label}
+                      onChange={(e) => modifyTaskLabel(e, task)}
+                    />
+                  </div>
+                  <div>{task.label}</div>
+                </li>
+              ))}
+            </ul>
+
             <button onClick={() => setShowModifyDialog(false)}>cancel</button>
+            <button onClick={() => setShowModifyDialog(false)}>confirm</button>
           </dialog>
         )}
         {showSelectActions && (
           <div className="task-operations">
-            {/* TODO: implement bulk task modification <button>modify all</button> */}
+            <button onClick={() => enterModifyTaskMode()}>modify all</button>
             <button>complete all</button>
             <button>delete all</button>
           </div>
@@ -97,7 +130,11 @@ function App() {
                 <div className="task-actions">
                   <button onClick={() => markAsComplete(task)}>complete</button>
                   <button onClick={() => removeTask(task)}>remove</button>
-                  <button onClick={() => modifyTask(task)}>modify</button>
+                  {task.selected && (
+                    <button onClick={() => enterModifyTaskMode()}>
+                      modify
+                    </button>
+                  )}
                 </div>
               </li>
             ))}
