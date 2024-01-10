@@ -107,10 +107,12 @@ function App() {
         )}
         <div className="task-display">
           <ul>
-            <label>
-              Select all
-              <input type="checkbox" onChange={() => toggleSelectAll()} />
-            </label>
+            {tasks.length > 0 && (
+              <label>
+                Select all
+                <input type="checkbox" onChange={() => toggleSelectAll()} />
+              </label>
+            )}
             {tasks.map((task, i) => (
               <li key={i} className="task-list-item">
                 <div className="task-name">
