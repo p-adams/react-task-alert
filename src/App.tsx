@@ -67,7 +67,7 @@ function App() {
         )}
         {showSelectActions && (
           <div className="task-operations">
-            <button>modify all</button>
+            {/* TODO: implement bulk task modification <button>modify all</button> */}
             <button>complete all</button>
             <button>delete all</button>
           </div>
