@@ -68,6 +68,17 @@ function App() {
     );
   }
 
+  function modifyTaskReminder(e: ChangeEvent<HTMLInputElement>, task: UITask) {
+    const $task = { ...tasksToModify.find(($task) => $task.id === task.id) };
+    $task.reminder = { date: new Date(e.target.value) };
+
+    setTasksToModify(($tasks) =>
+      $tasks.map(($t) => {
+        return $t.id === $task.id ? { ...$t, ...$task } : $t;
+      })
+    );
+  }
+
   function confirmModification() {
     /* TODO merge tasks with modified tasks */
   }
@@ -88,8 +99,15 @@ function App() {
                       value={task.label}
                       onChange={(e) => modifyTaskLabel(e, task)}
                     />
+                    <input
+                      name="date"
+                      type="datetime-local"
+                      onChange={(e) => modifyTaskReminder(e, task)}
+                    />
                   </div>
-                  <div>{task.label}</div>
+                  <div>
+                    {task.label} {task.reminder?.date.toLocaleString()}
+                  </div>
                 </li>
               ))}
             </ul>
