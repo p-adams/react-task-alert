@@ -19,6 +19,7 @@ function App() {
   const [tasks, setTasks] = useState<UITask[]>([]);
   const [task, setTask] = useState<string>("");
   const [showSelectActions, setShowSelectActions] = useState<boolean>(false);
+  const [showModifyDialog, setShowModifyDialog] = useState<boolean>(false);
 
   function addTask() {
     setTasks((v) => [...v, { id: nanoid(), label: task, selected: false }]);
@@ -50,10 +51,20 @@ function App() {
     );
   }
 
+  function modifyTask(task: UITask) {
+    // TODO: implement modify task
+  }
+
   return (
     <>
       <h1>React Task Alert</h1>
       <div className="card">
+        {showModifyDialog && (
+          <dialog open={showModifyDialog}>
+            {/* implement task modify dialog */}
+            <button onClick={() => setShowModifyDialog(false)}>cancel</button>
+          </dialog>
+        )}
         {showSelectActions && (
           <div className="task-operations">
             <button>modify all</button>
@@ -86,6 +97,7 @@ function App() {
                 <div className="task-actions">
                   <button onClick={() => markAsComplete(task)}>complete</button>
                   <button onClick={() => removeTask(task)}>remove</button>
+                  <button onClick={() => modifyTask(task)}>modify</button>
                 </div>
               </li>
             ))}
