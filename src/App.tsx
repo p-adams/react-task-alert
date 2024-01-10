@@ -26,9 +26,11 @@ function App() {
     setTasks((v) => [...v, { id: nanoid(), label: task, selected: false }]);
     setTask("");
   }
+
   function removeTask(task: UITask) {
     setTasks(($tasks) => $tasks.filter(($task) => $task.id !== task.id));
   }
+
   function markAsComplete(task: UITask) {
     setTasks(($tasks) =>
       $tasks.map(($task) =>
@@ -58,7 +60,6 @@ function App() {
   }
 
   function modifyTaskLabel(e: ChangeEvent<HTMLInputElement>, task: UITask) {
-    // const _key = e.target.name;
     const $task = { ...tasksToModify.find(($task) => $task.id === task.id) };
     $task.label = e.target.value;
     setTasksToModify(($tasks) =>
@@ -71,7 +72,6 @@ function App() {
   function modifyTaskReminder(e: ChangeEvent<HTMLInputElement>, task: UITask) {
     const $task = { ...tasksToModify.find(($task) => $task.id === task.id) };
     $task.reminder = { date: new Date(e.target.value) };
-
     setTasksToModify(($tasks) =>
       $tasks.map(($t) => {
         return $t.id === $task.id ? { ...$t, ...$task } : $t;
@@ -99,14 +99,15 @@ function App() {
                       value={task.label}
                       onChange={(e) => modifyTaskLabel(e, task)}
                     />
+                    <div>{task.label}</div>
+                  </div>
+                  <div>
                     <input
                       name="date"
                       type="datetime-local"
                       onChange={(e) => modifyTaskReminder(e, task)}
                     />
-                  </div>
-                  <div>
-                    {task.label} {task.reminder?.date.toLocaleString()}
+                    <div>{task.reminder?.date.toLocaleString()}</div>
                   </div>
                 </li>
               ))}
