@@ -1,6 +1,7 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { nanoid } from "nanoid";
 import "./App.css";
+import { orderedTasks } from "./utils/tasks";
 
 interface Task {
   id: string;
@@ -11,7 +12,7 @@ interface Task {
   };
 }
 
-interface UITask extends Task {
+export interface UITask extends Task {
   selected?: boolean;
 }
 
@@ -21,6 +22,27 @@ function App() {
   const [task, setTask] = useState<string>("");
   const [showSelectActions, setShowSelectActions] = useState<boolean>(false);
   const [showModifyDialog, setShowModifyDialog] = useState<boolean>(false);
+  const [currentReminder, setCurrentReminder] = useState<UITask | null>(null);
+
+  useEffect(() => {
+    const $iv = setInterval(() => {
+      const $tasks = orderedTasks(tasks);
+      for (const task of $tasks) {
+        const timestamp = task.reminder?.date?.getTime() ?? 0;
+        const currentTimestamp = new Date().getTime();
+        // Check if the timestamps are within a small range (e.g., 1000 milliseconds)
+        if (Math.abs(currentTimestamp - timestamp) < 1000) {
+          setCurrentReminder(task);
+          console.log("Current time is equal to the timestamp.");
+          // Break out of the loop after finding a matching task
+          break;
+        }
+      }
+    }, 1000);
+    return () => {
+      clearInterval($iv);
+    };
+  }, [tasks]);
 
   function addTask() {
     setTasks((v) => [
@@ -96,6 +118,9 @@ function App() {
     <>
       <h1>React Task Alert</h1>
       <div className="card">
+        {!!currentReminder && (
+          <div className="reminder">Time for: {currentReminder.label}</div>
+        )}
         {showModifyDialog && (
           <dialog open={showModifyDialog}>
             {/* implement task modify dialog */}
