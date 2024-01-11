@@ -3,8 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
 }
-.task-operations {
-}
+
 .task-list-item {
   display: flex;
   justify-content: space-between;
@@ -16,6 +15,7 @@
 .task-actions {
   display: flex;
   align-items: center;
+  margin-left: 12px;
 }
 .task-label {
   margin-left: 4px;

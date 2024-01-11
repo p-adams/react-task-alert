@@ -7,7 +7,7 @@ interface Task {
   label: string;
   completed?: boolean;
   reminder?: {
-    date: Date;
+    date: Date | null;
   };
 }
 
@@ -23,7 +23,10 @@ function App() {
   const [showModifyDialog, setShowModifyDialog] = useState<boolean>(false);
 
   function addTask() {
-    setTasks((v) => [...v, { id: nanoid(), label: task, selected: false }]);
+    setTasks((v) => [
+      ...v,
+      { id: nanoid(), label: task, selected: false, reminder: { date: null } },
+    ]);
     setTask("");
   }
 
@@ -80,7 +83,13 @@ function App() {
   }
 
   function confirmModification() {
-    /* TODO merge tasks with modified tasks */
+    setTasks((currentTasks) =>
+      currentTasks.map((task) => {
+        const modifiedTask = tasksToModify.find((t) => t.id === task.id);
+        return modifiedTask ? { ...task, ...modifiedTask } : task;
+      })
+    );
+    setShowModifyDialog(false);
   }
 
   return (
@@ -107,14 +116,14 @@ function App() {
                       type="datetime-local"
                       onChange={(e) => modifyTaskReminder(e, task)}
                     />
-                    <div>{task.reminder?.date.toLocaleString()}</div>
+                    <div>{task.reminder?.date?.toLocaleString()}</div>
                   </div>
                 </li>
               ))}
             </ul>
 
             <button onClick={() => setShowModifyDialog(false)}>cancel</button>
-            <button onClick={() => setShowModifyDialog(false)}>confirm</button>
+            <button onClick={() => confirmModification()}>confirm</button>
           </dialog>
         )}
         {showSelectActions && (
@@ -148,14 +157,18 @@ function App() {
                     {task.label}
                   </div>
                 </div>
+
                 <div className="task-actions">
-                  <button onClick={() => markAsComplete(task)}>complete</button>
-                  <button onClick={() => removeTask(task)}>remove</button>
+                  {task.reminder?.date && (
+                    <div>{task.reminder.date.toLocaleString()}</div>
+                  )}
                   {task.selected && (
                     <button onClick={() => enterModifyTaskMode()}>
                       modify
                     </button>
                   )}
+                  <button onClick={() => markAsComplete(task)}>complete</button>
+                  <button onClick={() => removeTask(task)}>remove</button>
                 </div>
               </li>
             ))}
